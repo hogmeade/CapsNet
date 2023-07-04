@@ -1,0 +1,1 @@
+epoch, time, test_loss, train_loss, test_accuracy, train_acc, reconstruction_loss_train, reconstruction_loss_test, margin_loss_train, margin_loss_test

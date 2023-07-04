@@ -91,16 +91,20 @@ def load_cifar10(batch_size, valid_size=0.1):
     train_transform = transforms.Compose([
                 transforms.ColorJitter(brightness=63./255, contrast=0.8),
                 transforms.RandomHorizontalFlip(),
+                transforms.RandomCrop(size=(24 , 24)),
                 transforms.ToTensor(),
                 transforms.Normalize((0,0,0), (0.5, 0.5, 0.5))
             ])
     valid_transform = transforms.Compose([
+                transforms.RandomCrop(size=(24 , 24)),
                 transforms.ToTensor(),
-                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5))
+                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5)),
+                
             ])
     test_transform = transforms.Compose([
+                transforms.RandomCrop(size=(24 , 24)),
                 transforms.ToTensor(),
-                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5))
+                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5)),
         ])
     train_dataset = datasets.CIFAR10('../data',
                                     train=True,

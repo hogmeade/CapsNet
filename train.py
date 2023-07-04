@@ -3,6 +3,7 @@ import time
 import torch
 import torch.nn as nn
 import numpy as np
+import random
 from torch.autograd import Variable
 
 from constants import *
@@ -70,12 +71,12 @@ def get_network(opts):
         if opts.decoder == "Conv":
             opts.decoder = "Conv32"
         capsnet = CapsNet(reconstruction_type=opts.decoder,
-                          imsize=32, 
+                          imsize=24, 
                           routing_iterations = opts.routing_iterations,
-                          primary_caps_gridsize=8,
+                          primary_caps_gridsize=4,
                           img_channels=3, 
                           batchnorm=opts.batch_norm,
-                          num_primary_capsules=32,
+                          num_primary_capsules=64,
                           loss=opts.loss_type,
                           leaky_routing=opts.leaky_routing)
     if opts.use_gpu:
@@ -106,6 +107,11 @@ def get_dataset(opts):
     
 
 def main(opts):
+    torch.manual_seed(opts.seed)
+    torch.cuda.manual_seed(opts.seed)
+    random.seed(opts.seed)
+    np.random.seed(opts.seed)
+
     capsnet = get_network(opts)
 
     optimizer = torch.optim.Adam(capsnet.parameters(), lr=opts.learning_rate)
@@ -121,7 +127,7 @@ def main(opts):
         
         # Annealing alpha
         alpha = get_alpha(epoch)
-
+        print("Fetching next batch ...")
         for batch, (data, target) in tqdm(list(enumerate(train_loader)), ascii=True, desc="Epoch{:3d}".format(epoch)):
             optimizer.zero_grad()
             data, target = transform_data(data, target, opts.use_gpu, num_classes=capsnet.num_classes)
@@ -151,7 +157,7 @@ def main(opts):
 
         # Save reconstruction image from testing set
         if opts.save_images:
-            data, target = iter(test_loader).next()
+            data, target = next(iter(test_loader))
             data, _ = transform_data(data, target, opts.use_gpu)
             _, reconstructions, _ = capsnet(data)
             filename = "reconstruction_epoch_{}.png".format(epoch)
@@ -161,9 +167,9 @@ def main(opts):
                 save_images(IMAGES_SAVE_DIR, filename, data, reconstructions, imsize=capsnet.imsize)
 
         # Save model
-        model_path = get_path(SAVE_DIR, "model{}.pt".format(epoch))
-        torch.save(capsnet.state_dict(), model_path)
-        capsnet.train()
+        # model_path = get_path(SAVE_DIR, "model{}.pt".format(epoch))
+        # torch.save(capsnet.state_dict(), model_path)
+        # capsnet.train()
 
 
 if __name__ == '__main__':

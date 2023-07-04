@@ -55,7 +55,8 @@ def create_options():
                       help="Set annealing function for alpha. Options: [none, 1, 2]")
     parser.add_option("--leaky", dest="leaky_routing", default=False, action="store_true", 
                       help="Turn on/off leaky routing (Add orphan class for reconstruction)")
-    parser.add_option("--model", dest="model", help="Set model name")
+    parser.add_option("--model", dest="model", help="Set model name", default="unknown")
+    parser.add_option("--seed", dest="seed", default=12345, type="int")
     
 
     
@@ -72,5 +73,3 @@ def create_options():
 
 if __name__ == '__main__':
     options = create_options()
-
-

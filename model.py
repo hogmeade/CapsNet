@@ -4,6 +4,7 @@ from tools import squash
 import torch
 from torch.autograd import Variable
 USE_GPU=True
+from se_module import *
 
 def routing_algorithm(x, weight, bias, routing_iterations):
     """
@@ -11,9 +12,13 @@ def routing_algorithm(x, weight, bias, routing_iterations):
     weight: [1,num_capsules_in,num_capsules_out,out_channels,in_channels]
     bias: [1,1, num_capsules_out, out_channels]
     """
+    
     num_capsules_in = x.shape[1]
     num_capsules_out = weight.shape[2]
     batch_size = x.size(0)
+
+    # se = SELayer1x8_1D(2048,32)
+    # x=se(x)
     
     x = x.unsqueeze(2).unsqueeze(4)
 
@@ -71,7 +76,7 @@ class ConvLayer(nn.Module):
 class PrimaryCapules(nn.Module):
   
   def __init__(self, 
-               num_capsules=32, 
+               num_capsules=64, 
                in_channels=256, 
                out_channels=8, 
                kernel_size=9,
@@ -178,9 +183,10 @@ class ReconstructionModule(nn.Module):
     else:
       max_length_indices = target.max(dim=1)[1]
     
-    masked = Variable(x.new_tensor(torch.eye(self.num_capsules)))
-    
-    masked = masked.index_select(dim=0, index=max_length_indices.data)
+    # masked = Variable(x.new_tensor(torch.eye(self.num_capsules)))
+    masked = torch.eye(self.num_capsules).clone().detach().requires_grad_(True)
+
+    masked = masked.cuda().index_select(dim=0, index=max_length_indices.data)
     decoder_input = (x * masked[:, :, None, None]).view(batch_size, -1)
 
     reconstructions = self.decoder(decoder_input)
@@ -234,7 +240,7 @@ class ConvReconstructionModule(nn.Module):
       max_length_indices = target.max(dim=1)[1]
     
     masked = x.new_tensor(torch.eye(self.num_capsules))
-    masked = masked.index_select(dim=0, index=max_length_indices.data)
+    masked = masked.cuda().index_select(dim=0, index=max_length_indices.data)
 
     decoder_input = (x * masked[:, :, None, None]).view(batch_size, -1)
     decoder_input = self.FC(decoder_input)
@@ -300,7 +306,7 @@ class SmallNorbConvReconstructionModule(nn.Module):
     else:
       max_length_indices = target.max(dim=1)[1]
     masked = Variable(x.new_tensor(torch.eye(self.num_capsules)))
-    masked = masked.index_select(dim=0, index=max_length_indices.data)
+    masked = masked.cuda().index_select(dim=0, index=max_length_indices.data)
 
     decoder_input = (x * masked[:, :, None, None]).view(batch_size, -1)
     decoder_input = self.FC(decoder_input)
