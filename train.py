@@ -102,7 +102,7 @@ def get_dataset(opts):
     if opts.dataset == 'small_norb':
         return load_small_norb(opts.batch_size)
     if opts.dataset == 'cifar10':
-        return load_cifar10(opts.batch_size)
+        return load_cifar10(opts.batch_size,valid_size=0)
     raise ValueError("Dataset not supported:" + opts.dataset)
     
 
@@ -115,6 +115,7 @@ def main(opts):
     capsnet = get_network(opts)
 
     optimizer = torch.optim.Adam(capsnet.parameters(), lr=opts.learning_rate)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.94)
 
     """ Load saved model"""
     load_model(opts, capsnet)
@@ -152,6 +153,12 @@ def main(opts):
 
 
             stats.track_test(loss.data.detach().item(),rec_loss.detach().item(), marg_loss.detach().item(), target.detach(), predictions.detach())
+        
+        scheduler.step()
+        learning_rate = optimizer.param_groups[0]['lr']
+        learning_rate = max(learning_rate, 1e-6)
+        optimizer.param_groups[0]['lr'] = learning_rate
+        print("Learning rate: %f"%learning_rate)
 
         stats.save_stats(epoch)
 
