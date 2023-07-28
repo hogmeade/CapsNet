@@ -3,6 +3,7 @@ import time
 import torch
 import torch.nn as nn
 import numpy as np
+import random
 from torch.autograd import Variable
 
 from constants import *
@@ -106,6 +107,11 @@ def get_dataset(opts):
     
 
 def main(opts):
+    torch.manual_seed(opts.seed)
+    torch.cuda.manual_seed(opts.seed)
+    random.seed(opts.seed)
+    np.random.seed(opts.seed)
+
     capsnet = get_network(opts)
 
     optimizer = torch.optim.Adam(capsnet.parameters(), lr=opts.learning_rate)
@@ -151,7 +157,7 @@ def main(opts):
 
         # Save reconstruction image from testing set
         if opts.save_images:
-            data, target = iter(test_loader).next()
+            data, target = next(iter(test_loader))
             data, _ = transform_data(data, target, opts.use_gpu)
             _, reconstructions, _ = capsnet(data)
             filename = "reconstruction_epoch_{}.png".format(epoch)
@@ -161,9 +167,9 @@ def main(opts):
                 save_images(IMAGES_SAVE_DIR, filename, data, reconstructions, imsize=capsnet.imsize)
 
         # Save model
-        model_path = get_path(SAVE_DIR, "model{}.pt".format(epoch))
-        torch.save(capsnet.state_dict(), model_path)
-        capsnet.train()
+        # model_path = get_path(SAVE_DIR, "model{}.pt".format(epoch))
+        # torch.save(capsnet.state_dict(), model_path)
+        # capsnet.train()
 
 
 if __name__ == '__main__':

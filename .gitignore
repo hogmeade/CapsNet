@@ -9,3 +9,5 @@ options/
 logs_old/
 .vscode
 data/
+checkpoint/
+checkpoints/
