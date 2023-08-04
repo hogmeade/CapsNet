@@ -1,5 +1,8 @@
 from torch import nn
+<<<<<<< HEAD
 import torch
+=======
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
 
 
 class SELayer(nn.Module):
@@ -11,7 +14,11 @@ class SELayer(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(channel // reduction, channel, bias=False),
             nn.Sigmoid()
+<<<<<<< HEAD
         )
+=======
+        ).cuda()
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
 
     def forward(self, x):
         b, c, _, _ = x.size() # 128, 256, 6, 6
@@ -28,7 +35,11 @@ class SELayer8x8(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(channel // reduction, channel, bias=False),
             nn.Sigmoid()
+<<<<<<< HEAD
         )
+=======
+        ).cuda()
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
 
     def forward(self, x):
         b, c, d, _, _ = x.size() # 8, 8, 6
@@ -45,7 +56,11 @@ class SELayer10x16(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(channel // reduction, channel, bias=False),
             nn.Sigmoid()
+<<<<<<< HEAD
         )
+=======
+        ).cuda()
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
 
     def forward(self, x):
         b, c, _, _ = x.size() # 128, 1152, 10, 16
@@ -68,6 +83,7 @@ class SELayer1x8(nn.Module):
         b, c, _, _ = x.size() # 128, 1152, 10, 16
         y = self.avg_pool(x).view(b, c) # 128, 1152
         y = self.fc(y).view(b, c, 1, 1) # 128, 1152, 1, 1
+<<<<<<< HEAD
         return x * y.expand_as(x)
     
 class SELayer1x8_1D(nn.Module):
@@ -85,4 +101,6 @@ class SELayer1x8_1D(nn.Module):
         b, c, _ = x.size() # 128, 1152, 10, 16
         y = self.avg_pool(x).view(b, c) # 128, 1152
         y = self.fc(y).view(b, c, 1) # 128, 1152, 1, 1
+=======
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
         return x * y.expand_as(x)

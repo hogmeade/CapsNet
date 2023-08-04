@@ -3,6 +3,7 @@ import torch.nn.functional as functional
 from tools import squash
 import torch
 from torch.autograd import Variable
+from se_module import *
 USE_GPU=True
 from se_module import *
 
@@ -24,6 +25,10 @@ def routing_algorithm(x, weight, bias, routing_iterations):
 
     #[batch_size, 32*6*6, 10, 16]
     u_hat = torch.matmul(weight, x).squeeze()
+
+    # se = SELayer10x16(2048,32)
+    # u_hat = se(u_hat)
+
 
     b_ij = Variable(x.new(batch_size, num_capsules_in, num_capsules_out, 1).zero_())
 
@@ -183,9 +188,13 @@ class ReconstructionModule(nn.Module):
     else:
       max_length_indices = target.max(dim=1)[1]
     
+<<<<<<< HEAD
     # masked = Variable(x.new_tensor(torch.eye(self.num_capsules)))
     masked = torch.eye(self.num_capsules).clone().detach().requires_grad_(True)
 
+=======
+    masked = Variable(x.new_tensor(torch.eye(self.num_capsules)))
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
     masked = masked.cuda().index_select(dim=0, index=max_length_indices.data)
     decoder_input = (x * masked[:, :, None, None]).view(batch_size, -1)
 

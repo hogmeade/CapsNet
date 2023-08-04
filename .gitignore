@@ -9,4 +9,9 @@ options/
 logs_old/
 .vscode
 data/
+<<<<<<< HEAD
 *.zip
+=======
+checkpoint/
+checkpoints/
+>>>>>>> 3bb7c4d81f418f7639edaa41423c81f3c2e93e4b
