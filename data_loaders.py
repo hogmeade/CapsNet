@@ -89,22 +89,22 @@ def load_small_norb(batch_size):
 
 def load_cifar10(batch_size, valid_size=0.1):
     train_transform = transforms.Compose([
-                transforms.ColorJitter(brightness=63./255, contrast=0.8),
+                transforms.ColorJitter(brightness=.2, contrast=0.2),
                 transforms.RandomHorizontalFlip(),
                 transforms.RandomCrop(size=(24 , 24)),
                 transforms.ToTensor(),
-                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5))
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
             ])
     valid_transform = transforms.Compose([
                 transforms.RandomCrop(size=(24 , 24)),
                 transforms.ToTensor(),
-                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5)),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
                 
             ])
     test_transform = transforms.Compose([
                 transforms.RandomCrop(size=(24 , 24)),
                 transforms.ToTensor(),
-                transforms.Normalize((0,0,0), (0.5, 0.5, 0.5)),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
         ])
     train_dataset = datasets.CIFAR10('../data',
                                     train=True,
